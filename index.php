@@ -13,15 +13,15 @@ require_once 'includes/database-connection.php';
 $error = '';  // Variable to store error messages
 
 // Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['password'])) {
-    $email = trim($_POST['email']);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['password'])) {
+    $userEmail = trim($_POST['userEmail']);
     $password = trim($_POST['password']);
 
     // SQL to check the existence of the user
-    $sql = "SELECT userID, email, password FROM user WHERE email = ?";
+    $sql = "SELECT userID, userEmail, password FROM user WHERE userEmail = ?";
 
     if ($stmt = $pdo->prepare($sql)) {
-        $stmt->execute([$email]);  // Execute the query
+        $stmt->execute([$userEmail]);  // Execute the query
 
         // Check if the user exists
         if ($stmt->rowCount() == 1) {
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['passw
             if (password_verify($password, $user['password'])) {
                 // Password is correct, start the session
                 $_SESSION['userid'] = $user['userID'];
-                $_SESSION['email'] = $user['email'];
+                $_SESSION['userEmail'] = $user['userEmail'];
 
                 // Redirect to the user dashboard
                 header('Location: dashboard.php');
@@ -59,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['passw
     <?php if ($error != '') echo '<p style="color:red;">' . $error . '</p>'; ?>
     <form action="login.php" method="post">
         <div>
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required>
+            <label for="userEmail">Email:</label>
+            <input type="email" name="userEmail" id="userEmail" required>
         </div>
         <div>
             <label for="password">Password:</label>
