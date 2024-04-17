@@ -13,15 +13,15 @@ require_once 'includes/database-connection.php';
 $error = '';  // Variable to store error messages
 
 // Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['password'])) {
-    $email = trim($_POST['email']);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username'], $_POST['password'])) {
+    $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
     // SQL to check the existence of the user
-    $sql = "SELECT userID, email, password FROM user WHERE email = ?";
+    $sql = "SELECT userID, username, password FROM user WHERE username = ?";
 
     if ($stmt = $pdo->prepare($sql)) {
-        $stmt->execute([$email]);  // Execute the query
+        $stmt->execute([$username]);  // Execute the query
 
         // Check if the user exists
         if ($stmt->rowCount() == 1) {
@@ -31,16 +31,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['passw
             if (password_verify($password, $user['password'])) {
                 // Password is correct, start the session
                 $_SESSION['userid'] = $user['userID'];
-                $_SESSION['email'] = $user['email'];
+                $_SESSION['username'] = $user['username'];
 
                 // Redirect to the user dashboard
                 header('Location: dashboard.php');
                 exit();
             } else {
-                $error = 'Invalid email or password.';
+                $error = 'Invalid username or password.';
             }
         } else {
-            $error = 'Invalid email or password.';
+            $error = 'Invalid username or password.';
         }
     } else {
         $error = 'Oops! Something went wrong. Please try again later.';
@@ -59,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['passw
     <?php if ($error != '') echo '<p style="color:red;">' . $error . '</p>'; ?>
     <form action="login.php" method="post">
         <div>
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
         </div>
         <div>
             <label for="password">Password:</label>
