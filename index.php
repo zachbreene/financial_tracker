@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
                 $error = 'Invalid password.';
             }
         } else {
-            $error = 'User Not Found';
+            $error = 'User Not Found.';
         }
     } else {
         $error = 'Oops! Something went wrong. Please try again later.';
