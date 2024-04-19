@@ -37,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
                 header('Location: dashboard.php');
                 exit();
             } else {
-                $error = 'Invalid email or password.';
+                $error = 'Invalid password.';
             }
         } else {
-            $error = 'Invalid email or password.';
+            $error = 'User Not Found';
         }
     } else {
         $error = 'Oops! Something went wrong. Please try again later.';
