@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
 <body>
     <h2>Login</h2>
     <?php if ($error != '') echo '<p style="color:red;">' . $error . '</p>'; ?>
-    <form action="login.php" method="post">
+    <form action="index.php" method="post">
         <div>
             <label for="userEmail">Email:</label>
             <input type="email" name="userEmail" id="userEmail" required>
