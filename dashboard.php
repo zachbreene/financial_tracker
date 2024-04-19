@@ -59,7 +59,7 @@ $transactions = $transactionsStmt->fetchAll();
         <ul>
             <li><a href="manage_accounts.php">Manage Accounts</a></li>
             <li><a href="manage_budgets.php">Manage Budgets</a></li>
-            <li><a href="logout.php">Logout</a></li>
+            <li><a href="index.php">Logout</a></li>
         </ul>
     </nav>
 </body>
