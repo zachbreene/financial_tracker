@@ -1,4 +1,5 @@
 <?php
+ob_start();       // Start output buffering
 session_start();  // Start the session at the very beginning
 
 // Check if the user is already logged in
@@ -35,7 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
 
                 // Redirect to the user dashboard
                 header('Location: dashboard.php');
-                // exit();
+                exit();
+                ob_end_flush();   // End buffering and flush all output
             } else {
                 $error = 'Invalid password.';
             }
