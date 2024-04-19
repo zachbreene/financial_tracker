@@ -27,34 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
         if ($stmt->rowCount() == 1) {
             $user = $stmt->fetch();
 
-        // After fetching the user from the database
-        if ($stmt->rowCount() == 1) {
-            $user = $stmt->fetch();
-
-            // Debugging: Output fetched password hash and comparison result
-            echo "DB Password: " . $user['password'] . "<br>";
-            echo "Submitted Password: " . $password . "<br>";
-            echo "Hash of Submitted Password: " . password_hash($password, PASSWORD_DEFAULT) . "<br>";
-
-            // Verify the password
-            if (password_verify($password, $user['password'])) {
-                // Password is correct, start the session
-                $_SESSION['userid'] = $user['userID'];
-                $_SESSION['userEmail'] = $user['userEmail'];
-
-                // Redirect to the user dashboard
-                header('Location: dashboard.php');
-                exit();
-            } else {
-                $error = 'Invalid email or password.';
-            }
-        } else {
-            $error = 'Invalid email or password.';
-        }
-
-
-            // Verify the password
-            if (password_verify($password, $user['password'])) {
+            // Check the password (plaintext comparison)
+            if ($password === $user['password']) {
                 // Password is correct, start the session
                 $_SESSION['userid'] = $user['userID'];
                 $_SESSION['userEmail'] = $user['userEmail'];
@@ -66,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
                 $error = 'Invalid password.';
             }
         } else {
-            $error = 'User Not Found.';
+            $error = 'Invalid email.';
         }
     } else {
         $error = 'Oops! Something went wrong. Please try again later.';
