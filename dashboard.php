@@ -63,7 +63,7 @@ $transactions = $transactionsStmt->fetchAll();
         <?php endforeach; ?>
     </ul>
 
-    <h2>User Services</h2>
+    <h2>Services Menu</h2>
     <nav>
         <ul>
             <li><a href="manage_accounts.php">Manage Accounts</a></li>
