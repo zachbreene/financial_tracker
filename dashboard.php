@@ -39,6 +39,7 @@ $transactionsStmt = $pdo->prepare("SELECT t.transactionDescription, t.transactio
 $transactionsStmt->execute([$userID]);
 $transactions = $transactionsStmt->fetchAll();
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
