@@ -21,7 +21,7 @@ require_once 'includes/database-connection.php';
 $userID = $_SESSION['userid'];
 
 // Fetch user details
-$stmt = $pdo->prepare("SELECT userEmail FROM user WHERE userID = ?");
+$stmt = $pdo->prepare("SELECT userEmail, firstName, lastName FROM user WHERE userID = ?");
 $stmt->execute([$userID]);
 $user = $stmt->fetch();
 
