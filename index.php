@@ -46,8 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
         $error = 'Oops! Something went wrong. Please try again later.';
     }
 }
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
