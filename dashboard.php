@@ -48,7 +48,7 @@ $transactions = $transactionsStmt->fetchAll();
     <title>User Dashboard</title>
 </head>
 <body>
-    <h1>Welcome, <?= htmlspecialchars($user['userEmail']) ?>!</h1>
+    <h1>Welcome, <?= htmlspecialchars($user['firstName']) ?> <?= htmlspecialchars($user['lastName']) ?>!</h1>
     <h2>Account Summary</h2>
     <ul>
         <?php foreach ($accounts as $account): ?>
