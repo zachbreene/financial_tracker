@@ -23,7 +23,11 @@ $accountsStmt->execute([$userID]);
 $accounts = $accountsStmt->fetchAll();
 
 // Fetch recent transactions
-$transactionsStmt = $pdo->prepare("SELECT transactionDescription, transactionAmount, transactionDate FROM transactions WHERE userID = ? ORDER BY transactionDate DESC LIMIT 5");
+$transactionsStmt = $pdo->prepare("SELECT t.transactionDescription, t.transactionAmount, t.transactionDate 
+                                    FROM transactions t 
+                                    JOIN account a ON t.accountID = a.accountID 
+                                    WHERE a.userID = ? 
+                                    ORDER BY t.transactionDate DESC LIMIT 5");
 $transactionsStmt->execute([$userID]);
 $transactions = $transactionsStmt->fetchAll();
 
