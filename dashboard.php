@@ -7,6 +7,14 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 
+// Handle logout action
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    // Destroy the session and redirect to login page
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+
 // Include the database connection file
 require_once 'includes/database-connection.php';
 
@@ -31,7 +39,6 @@ $transactionsStmt = $pdo->prepare("SELECT t.transactionDescription, t.transactio
 $transactionsStmt->execute([$userID]);
 $transactions = $transactionsStmt->fetchAll();
 
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +66,7 @@ $transactions = $transactionsStmt->fetchAll();
         <ul>
             <li><a href="manage_accounts.php">Manage Accounts</a></li>
             <li><a href="manage_budgets.php">Manage Budgets</a></li>
-            <li><a href="index.php">Logout</a></li>
+            <li><a href="?action=logout">Logout</a></li>
         </ul>
     </nav>
 </body>
