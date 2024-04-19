@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
 
                 // Redirect to the user dashboard
                 header('Location: dashboard.php');
-                exit();
+                // exit();
             } else {
                 $error = 'Invalid password.';
             }
