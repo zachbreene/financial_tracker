@@ -14,14 +14,14 @@ $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 
 // Handle POST requests for adding, updating, or searching transactions
 if (isset($_POST['add'])) {
-    $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID]);
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
 }
 
 if (isset($_POST['update'])) {
-    $stmt = $pdo->prepare("UPDATE transactions SET transactionDescription = ?, transactionAmount = ?, transactionDate = ?, transactionType = ? WHERE transactionID = ?");
+    $stmt = $pdo->prepare("UPDATE transactions SET transactionDescription = ?, transactionAmount = ?, transactionDate = ?, transactionType = ?, categoryID = ? WHERE transactionID = ?");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $_POST['transactionID']]);
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
@@ -39,7 +39,7 @@ $sort = $_GET['sort'] ?? 'transactionDate';
 $order = $_GET['order'] ?? 'DESC';
 
 // Fetch transactions for the selected account including the transaction type
-$transactionsStmt = $pdo->prepare("SELECT transactionID, transactionDescription, transactionAmount, transactionDate, transactionType FROM transactions WHERE accountID = ? AND (transactionDescription LIKE ? OR transactionAmount LIKE ?) ORDER BY $sort $order");
+$transactionsStmt = $pdo->prepare("SELECT t.transactionID, t.transactionDescription, t.transactionAmount, t.transactionDate, t.transactionType, c.categoryName FROM transactions t LEFT JOIN category c ON t.categoryID = c.categoryID WHERE t.accountID = ? AND (t.transactionDescription LIKE ? OR t.transactionAmount LIKE ?) ORDER BY $sort $order");
 $transactionsStmt->execute([$accountID, '%' . $search . '%', '%' . $search . '%']);
 $transactions = $transactionsStmt->fetchAll();
 
@@ -93,6 +93,17 @@ $transactions = $transactionsStmt->fetchAll();
             <option value="Expense">Expense</option>
             <option value="Income">Income</option>
         </select>
+        <select name="category">
+            <?php
+            // Fetch all categories for the category dropdown
+            $categoriesStmt = $pdo->prepare("SELECT categoryID, categoryName FROM category");
+            $categoriesStmt->execute();
+            $categories = $categoriesStmt->fetchAll();
+            foreach ($categories as $category) {
+                echo '<option value="' . $category['categoryID'] . '">' . htmlspecialchars($category['categoryName']) . '</option>';
+            }
+            ?>
+        </select>
         <button type="submit" name="add">Add Transaction</button>
     </form>
 
@@ -100,20 +111,22 @@ $transactions = $transactionsStmt->fetchAll();
     <table>
         <thead>
             <tr>
-                <th>Description</th>
+                <th>Category</th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionAmount&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Amount</a></th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionDate&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Date</a></th>
                 <th>Type</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($transactions as $transaction): ?>
             <tr>
-                <td><?= htmlspecialchars($transaction['transactionDescription']) ?></td>
+                <td><?= htmlspecialchars($transaction['categoryName']) ?></td>
                 <td>$<?= number_format(htmlspecialchars($transaction['transactionAmount']), 2) ?></td>
                 <td><?= htmlspecialchars($transaction['transactionDate']) ?></td>
                 <td><?= htmlspecialchars($transaction['transactionType']) ?></td>
+                <td><?= htmlspecialchars($transaction['transactionDescription']) ?></td>
                 <td>
                     <a href="?accountID=<?= $accountID ?>&delete=<?= $transaction['transactionID'] ?>" onclick="return confirm('Are you sure you want to delete this transaction?');">Delete</a>
                 </td>
