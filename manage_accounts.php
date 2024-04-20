@@ -32,7 +32,7 @@ $accounts = $accountsStmt->fetchAll();
     <table>
         <thead>
             <tr>
-                <th>Type</th>
+                <th>Account Type</th>
                 <th>Balance</th>
                 <th>Actions</th>
             </tr>
@@ -43,7 +43,7 @@ $accounts = $accountsStmt->fetchAll();
                 <td><?= htmlspecialchars($account['accountType']) ?></td>
                 <td>$<?= number_format(htmlspecialchars($account['accountBalance']), 2) ?></td>
                 <td>
-                    <a href="account_details.php?accountID=<?= $account['accountID'] ?>">Details</a>
+                    <a href="account_details.php?accountID=<?= $account['accountID'] ?>">View</a>
                     <a href="delete_account.php?accountID=<?= $account['accountID'] ?>" onclick="return confirm('Are you sure you want to delete this account?');">Delete</a>
                 </td>
             </tr>
