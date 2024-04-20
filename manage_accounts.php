@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 
 // Check if the user is logged in, otherwise redirect to login page
@@ -39,7 +40,9 @@ $accountsStmt = $pdo->prepare("SELECT accountID, accountType, accountBalance FRO
 $accountsStmt->execute([$userID]);
 $accounts = $accountsStmt->fetchAll();
 
+ob_end_flush();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
