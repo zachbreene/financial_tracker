@@ -57,8 +57,7 @@ $accounts = $accountsStmt->fetchAll();
         <tbody>
             <?php foreach ($accounts as $account): ?>
             <tr>
-                <td>
-                <a href="account_details.php?accountID=<?= htmlspecialchars($account['accountType']) ?>">View</a>
+                <td><a href="account_details.php?accountID=<?= $account['accountID'] ?>"><?= htmlspecialchars($account['accountType']) ?></a></td>
                 <td>$<?= number_format(htmlspecialchars($account['accountBalance']), 2) ?></td>
                 <td>
                     <a href="account_details.php?accountID=<?= $account['accountID'] ?>">View</a>
