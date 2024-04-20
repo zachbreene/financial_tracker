@@ -12,8 +12,8 @@ require_once 'includes/database-connection.php';
 
 $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 
-// Fetch transactions for the selected account
-$transactionsStmt = $pdo->prepare("SELECT transactionDescription, transactionAmount, transactionDate FROM transactions WHERE accountID = ? ORDER BY transactionDate DESC");
+// Fetch transactions for the selected account including the transaction type
+$transactionsStmt = $pdo->prepare("SELECT transactionDescription, transactionAmount, transactionDate, transactionType FROM transactions WHERE accountID = ? ORDER BY transactionDate DESC");
 $transactionsStmt->execute([$accountID]);
 $transactions = $transactionsStmt->fetchAll();
 
@@ -24,6 +24,28 @@ $transactions = $transactionsStmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
     <h1>Account Transactions</h1>
@@ -35,6 +57,7 @@ $transactions = $transactionsStmt->fetchAll();
                 <th>Description</th>
                 <th>Amount</th>
                 <th>Date</th>
+                <th>Type</th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +66,7 @@ $transactions = $transactionsStmt->fetchAll();
                 <td><?= htmlspecialchars($transaction['transactionDescription']) ?></td>
                 <td>$<?= number_format(htmlspecialchars($transaction['transactionAmount']), 2) ?></td>
                 <td><?= htmlspecialchars($transaction['transactionDate']) ?></td>
+                <td><?= htmlspecialchars($transaction['transactionType']) ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
