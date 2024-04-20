@@ -1,4 +1,5 @@
 <?php
+ob_end_flush(); // Flush the output buffer and turn off output buffering
 session_start();
 
 // Check if the user is logged in, otherwise redirect to login page
@@ -38,6 +39,7 @@ if (isset($_GET['deleteAccount'])) {
 $accountsStmt = $pdo->prepare("SELECT accountID, accountType, accountBalance FROM account WHERE userID = ?");
 $accountsStmt->execute([$userID]);
 $accounts = $accountsStmt->fetchAll();
+ob_end_flush(); // Flush the output buffer and turn off output buffering
 
 ?>
 <!DOCTYPE html>
