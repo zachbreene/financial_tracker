@@ -22,6 +22,18 @@ if (isset($_POST['addAccount'])) {
     exit();
 }
 
+// Handle deleting an account
+if (isset($_GET['deleteAccount'])) {
+    $accountID = $_GET['deleteAccount'];
+    $deleteTransactions = $pdo->prepare("DELETE FROM transactions WHERE accountID = ?");
+    $deleteTransactions->execute([$accountID]);
+    $deleteAccount = $pdo->prepare("DELETE FROM account WHERE accountID = ? AND userID = ?");
+    $deleteAccount->execute([$accountID, $userID]);
+    header('Location: manage_accounts.php');
+    exit();
+}
+
+
 // Fetch all accounts associated with the logged-in user
 $accountsStmt = $pdo->prepare("SELECT accountID, accountType, accountBalance FROM account WHERE userID = ?");
 $accountsStmt->execute([$userID]);
@@ -72,8 +84,9 @@ $accounts = $accountsStmt->fetchAll();
                 <td><a href="account_details.php?accountID=<?= $account['accountID'] ?>"><?= htmlspecialchars($account['accountType']) ?></a></td>
                 <td>$<?= number_format(htmlspecialchars($account['accountBalance']), 2) ?></td>
                 <td>
+                    <!-- Links to view and delete the account -->
                     <a href="account_details.php?accountID=<?= $account['accountID'] ?>">View</a>
-                    <a href="delete_account.php?accountID=<?= $account['accountID'] ?>" onclick="return confirm('Are you sure you want to delete this account?');">Delete</a>
+                    <a href="?deleteAccount=<?= $account['accountID'] ?>" onclick="return confirm('Are you sure you want to delete this account? This will remove all associated transactions.');">Delete</a>
                 </td>
             </tr>
             <?php endforeach; ?>
