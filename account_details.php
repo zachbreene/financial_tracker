@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 session_start();
 
 // Check if the user is logged in, otherwise redirect to login page
@@ -16,7 +17,6 @@ $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 if (isset($_POST['add'])) {
     $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID, $_POST['category']]);
-    ob_clean(); // Clean (erase) the output buffer
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
 }
@@ -29,11 +29,13 @@ if (isset($_POST['update'])) {
     exit();
 }
 
-// Handle GET requests for deleting transactions
+// Handle deletion of a transaction
 if (isset($_GET['delete'])) {
+    $transactionID = $_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM transactions WHERE transactionID = ?");
-    $stmt->execute([$_GET['delete']]);
-    ob_clean(); // Clean (erase) the output buffer
+    $stmt->execute([$transactionID]);
+
+    // Redirect to clear the 'delete' parameter from the URL
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
 }
@@ -48,7 +50,9 @@ $transactionsStmt = $pdo->prepare("SELECT t.transactionID, t.transactionDescript
 $transactionsStmt->execute([$accountID, '%' . $search . '%', '%' . $search . '%']);
 $transactions = $transactionsStmt->fetchAll();
 
+ob_end_flush(); // End output buffering and flush all output
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
