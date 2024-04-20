@@ -69,6 +69,10 @@ $transactions = $transactionsStmt->fetchAll();
             margin-bottom: 5px;
             border-radius: 5px;
         }
+        nav ul {
+            display: flex;
+            padding: 0;
+        }
         nav li {
             margin-right: 10px;
         }
