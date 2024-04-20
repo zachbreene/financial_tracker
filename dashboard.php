@@ -95,6 +95,13 @@ $transactions = $transactionsStmt->fetchAll();
     </style>
 </head>
 <body>
+    <nav>
+        <ul>
+            <li><a href="?action=logout">Logout</a></li>
+            <li><a href="manage_accounts.php">Manage Accounts</a></li>
+            <li><a href="manage_budgets.php">Manage Budgets</a></li>
+        </ul>
+    </nav>
     <h1>Welcome, <?= htmlspecialchars($user['firstName']) . ' ' . htmlspecialchars($user['lastName']) ?>!</h1>
     <h2>Account Summary</h2>
     <ul>
@@ -109,14 +116,5 @@ $transactions = $transactionsStmt->fetchAll();
             <li><?= htmlspecialchars($transaction['transactionDescription']) ?>: $<?= number_format(htmlspecialchars($transaction['transactionAmount']), 2) ?> on <?= htmlspecialchars($transaction['transactionDate']) ?></li>
         <?php endforeach; ?>
     </ul>
-
-    <h2>Services Menu</h2>
-    <nav>
-        <ul>
-            <li><a href="manage_accounts.php">Manage Accounts</a></li>
-            <li><a href="manage_budgets.php">Manage Budgets</a></li>
-            <li><a href="?action=logout">Logout</a></li>
-        </ul>
-    </nav>
 </body>
 </html>

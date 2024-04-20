@@ -83,7 +83,7 @@ $transactions = $transactionsStmt->fetchAll();
     
     
     <!-- Search Form -->
-    <h2>Search Transaction Description</h2>
+    <h2>Transactions Search</h2>
     <form method="post" action="">
         <input type="text" name="search" placeholder="Search transactions...">
         <button type="submit">Search</button>
