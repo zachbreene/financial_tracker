@@ -14,7 +14,7 @@ $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 
 // Handle POST requests for adding transactions
 if (isset($_POST['add'])) {
-    $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID]);
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
@@ -22,7 +22,7 @@ if (isset($_POST['add'])) {
 
 // WOP: Handle POST requests for updating transactions
 if (isset($_POST['update'])) {
-    $stmt = $pdo->prepare("UPDATE transactions SET transactionDescription = ?, transactionAmount = ?, transactionDate = ?, transactionType = ? WHERE transactionID = ?");
+    $stmt = $pdo->prepare("UPDATE transactions SET transactionDescription = ?, transactionAmount = ?, transactionDate = ?, transactionType = ?, categoryID = ? WHERE transactionID = ?");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $_POST['transactionID']]);
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
