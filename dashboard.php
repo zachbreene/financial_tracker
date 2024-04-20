@@ -46,20 +46,67 @@ $transactions = $transactionsStmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
+    <!-- CSS Styling -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        nav ul {
+            display: flex;
+            padding: 0;
+        }
+        nav li {
+            margin-right: 10px;
+        }
+        a {
+            color: #06c;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        nav a {
+            padding: 10px 15px;
+            background-color: #06c;
+            color: white;
+            border-radius: 5px;
+        }
+        nav a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome, <?= htmlspecialchars($user['firstName']) . ' ' . htmlspecialchars($user['lastName']) ?>!</h1>
     <h2>Account Summary</h2>
     <ul>
         <?php foreach ($accounts as $account): ?>
-            <li><?= htmlspecialchars($account['accountType']) ?>: $<?= htmlspecialchars($account['accountBalance']) ?></li>
+            <li><?= htmlspecialchars($account['accountType']) ?>: $<?= number_format(htmlspecialchars($account['accountBalance']), 2) ?></li>
         <?php endforeach; ?>
     </ul>
 
     <h2>Recent Transactions</h2>
     <ul>
         <?php foreach ($transactions as $transaction): ?>
-            <li><?= htmlspecialchars($transaction['transactionDescription']) ?>: $<?= htmlspecialchars($transaction['transactionAmount']) ?> on <?= htmlspecialchars($transaction['transactionDate']) ?></li>
+            <li><?= htmlspecialchars($transaction['transactionDescription']) ?>: $<?= number_format(htmlspecialchars($transaction['transactionAmount']), 2) ?> on <?= htmlspecialchars($transaction['transactionDate']) ?></li>
         <?php endforeach; ?>
     </ul>
 
