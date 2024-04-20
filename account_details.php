@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 session_start();
 
 // Check if the user is logged in, otherwise redirect to login page
@@ -46,7 +47,9 @@ $transactionsStmt = $pdo->prepare("SELECT t.transactionID, t.transactionDescript
 $transactionsStmt->execute([$accountID, '%' . $search . '%', '%' . $search . '%']);
 $transactions = $transactionsStmt->fetchAll();
 
+ob_end_flush(); // End output buffering and flush all output
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
