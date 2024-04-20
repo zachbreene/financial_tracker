@@ -83,7 +83,10 @@ $accounts = $accountsStmt->fetchAll();
     <h2>Add New Account</h2>
     <form action="manage_accounts.php" method="post">
         <label for="accountType">Account Type:</label>
-        <input type="text" id="accountType" name="accountType" required>
+        <select name="accountType" id="accountType" required>
+            <option value="Checking">Checking</option>
+            <option value="Savings">Savings</option>
+        </select>
         <label for="accountBalance">Initial Balance:</label>
         <input type="number" id="accountBalance" name="accountBalance" required>
         <button type="submit" name="addAccount">Add Account</button>
