@@ -80,8 +80,10 @@ $transactions = $transactionsStmt->fetchAll();
 <body>
     <h1>Account Transactions</h1>
     <a href="manage_accounts.php">Back to Accounts</a>
-
+    
+    
     <!-- Search Form -->
+    <h2>Search Transaction Description</h2>
     <form method="post" action="">
         <input type="text" name="search" placeholder="Search transactions...">
         <button type="submit">Search</button>
