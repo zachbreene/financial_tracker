@@ -16,6 +16,7 @@ $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 if (isset($_POST['add'])) {
     $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID, $_POST['category']]);
+    ob_clean(); // Clean (erase) the output buffer
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
 }
@@ -32,6 +33,7 @@ if (isset($_POST['update'])) {
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM transactions WHERE transactionID = ?");
     $stmt->execute([$_GET['delete']]);
+    ob_clean(); // Clean (erase) the output buffer
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
 }
