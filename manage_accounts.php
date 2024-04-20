@@ -12,6 +12,16 @@ require_once 'includes/database-connection.php';
 
 $userID = $_SESSION['userid'];
 
+// Handle adding a new account
+if (isset($_POST['addAccount'])) {
+    $accountType = $_POST['accountType'];
+    $accountBalance = $_POST['accountBalance'];
+    $insertStmt = $pdo->prepare("INSERT INTO account (userID, accountType, accountBalance) VALUES (?, ?, ?)");
+    $insertStmt->execute([$userID, $accountType, $accountBalance]);
+    header('Location: manage_accounts.php');  // Refresh the page to show the new account
+    exit();
+}
+
 // Fetch all accounts associated with the logged-in user
 $accountsStmt = $pdo->prepare("SELECT accountID, accountType, accountBalance FROM account WHERE userID = ?");
 $accountsStmt->execute([$userID]);
@@ -69,6 +79,14 @@ $accounts = $accountsStmt->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
-    <p><a href="add_account.php">Add New Account</a></p>
+    <!-- Form to add a new account -->
+    <h2>Add New Account</h2>
+    <form action="manage_accounts.php" method="post">
+        <label for="accountType">Account Type:</label>
+        <input type="text" id="accountType" name="accountType" required>
+        <label for="accountBalance">Initial Balance:</label>
+        <input type="number" id="accountBalance" name="accountBalance" required>
+        <button type="submit" name="addAccount">Add Account</button>
+    </form>
 </body>
 </html>
