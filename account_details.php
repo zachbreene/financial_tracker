@@ -111,10 +111,10 @@ $transactions = $transactionsStmt->fetchAll();
     <table>
         <thead>
             <tr>
-                <th>Category</th>
+                <th><a href="?accountID=<?= $accountID ?>&sort=categoryName&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Category</a></th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionAmount&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Amount</a></th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionDate&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Date</a></th>
-                <th>Type</th>
+                <th><a href="?accountID=<?= $accountID ?>&sort=transactionType&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Type</a></th>
                 <th>Description</th>
                 <th>Actions</th>
             </tr>
