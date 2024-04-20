@@ -97,10 +97,9 @@ $transactions = $transactionsStmt->fetchAll();
 <body>
     <nav>
         <ul>
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Manage Accounts</a></li>
-            <li><a href="#">Manage Budgets</a></li>
             <li style="float:right"><a href="?action=logout">Logout</a></li>
+            <li><a href="manage_accounts.php">Manage Accounts</a></li>
+            <li><a href="manage_budgets.php">Manage Budgets</a></li>
         </ul>
     </nav>
     <h1>Welcome, <?= htmlspecialchars($user['firstName']) . ' ' . htmlspecialchars($user['lastName']) ?>!</h1>
