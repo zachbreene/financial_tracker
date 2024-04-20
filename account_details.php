@@ -12,7 +12,7 @@ require_once 'includes/database-connection.php';
 
 $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 
-// Handle POST requests for adding, updating, or searching transactions
+// Handle POST requests for adding transactions
 if (isset($_POST['add'])) {
     $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID]);
@@ -20,6 +20,7 @@ if (isset($_POST['add'])) {
     exit();
 }
 
+// WOP: Handle POST requests for updating transactions
 if (isset($_POST['update'])) {
     $stmt = $pdo->prepare("UPDATE transactions SET transactionDescription = ?, transactionAmount = ?, transactionDate = ?, transactionType = ?, categoryID = ? WHERE transactionID = ?");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $_POST['transactionID']]);
@@ -27,6 +28,7 @@ if (isset($_POST['update'])) {
     exit();
 }
 
+// Handle GET requests for deleting transactions
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM transactions WHERE transactionID = ?");
     $stmt->execute([$_GET['delete']]);
@@ -34,6 +36,7 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
+// Fetch the account details for the selected account
 $search = $_POST['search'] ?? '';
 $sort = $_GET['sort'] ?? 'transactionDate';
 $order = $_GET['order'] ?? 'DESC';
@@ -50,6 +53,7 @@ $transactions = $transactionsStmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Details</title>
+    <!-- CSS styling to the page -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,10 +111,12 @@ $transactions = $transactionsStmt->fetchAll();
         <button type="submit" name="add">Add Transaction</button>
     </form>
 
+    <!-- Transaction table for displaying Transactions -->
     <h2>Transactions</h2>
     <table>
         <thead>
             <tr>
+                <!-- Sorting links to the table headers -->
                 <th><a href="?accountID=<?= $accountID ?>&sort=categoryName&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Category</a></th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionAmount&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Amount</a></th>
                 <th><a href="?accountID=<?= $accountID ?>&sort=transactionDate&order=<?= $order == 'DESC' ? 'ASC' : 'DESC' ?>">Date</a></th>
