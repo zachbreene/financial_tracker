@@ -24,6 +24,7 @@ $accounts = $accountsStmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Accounts</title>
+    <!-- CSS styling for the page -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,6 +58,7 @@ $accounts = $accountsStmt->fetchAll();
         <tbody>
             <?php foreach ($accounts as $account): ?>
             <tr>
+                <!-- Display account details -->
                 <td><a href="account_details.php?accountID=<?= $account['accountID'] ?>"><?= htmlspecialchars($account['accountType']) ?></a></td>
                 <td>$<?= number_format(htmlspecialchars($account['accountBalance']), 2) ?></td>
                 <td>

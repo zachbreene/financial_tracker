@@ -53,7 +53,7 @@ $transactions = $transactionsStmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Details</title>
-    <!-- CSS styling to the page -->
+    <!-- CSS styling for the page -->
     <style>
         body {
             font-family: Arial, sans-serif;
