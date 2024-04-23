@@ -11,17 +11,26 @@ $error = '';  // Variable to store error messages
 $questionsStmt = $pdo->query("SELECT questionID, questionText FROM security_questions");
 $securityQuestions = $questionsStmt->fetchAll();
 
+// Check if the user is already logged in
+if (isset($_SESSION['userid'])) {
+    header('Location: dashboard.php');  // Redirect to user dashboard if already logged in
+    exit();
+}
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['password'])) {
     $userEmail = trim($_POST['userEmail']);
-    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT); // Hash the password before storing it
+    $password = $_POST['password'];  // The password the user entered
+
+    // Hash the password before storing it
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); 
 
     // Start the transaction
     $pdo->beginTransaction();
     try {
         // SQL to insert the new user
         $stmt = $pdo->prepare("INSERT INTO user (userEmail, password) VALUES (?, ?)");
-        $stmt->execute([$userEmail, $password]);
+        $stmt->execute([$userEmail, $hashedPassword]);
         $userID = $pdo->lastInsertId(); // Get the last inserted ID for the user
 
         // Prepare security answers insertion
