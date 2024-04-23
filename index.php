@@ -71,6 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
         <div>
             <button type="submit">Login</button>
         </div>
+
+        <div>
+            <a href="register.php" class="button">Create New Account</a>
+        </div>
+
+        <div>
+            <a href="password_recovery.php">Forgot Your Password?</a>
+        </div>
     </form>
 </body>
 </html>
