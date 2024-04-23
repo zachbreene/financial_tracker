@@ -2,6 +2,13 @@
 ob_start();       // Start output buffering
 session_start();  // Start the session at the very beginning
 
+// Check if there's a success message to display
+if (isset($_SESSION['success_message'])) {
+    echo '<p style="color:green;">' . $_SESSION['success_message'] . '</p>';
+    // Unset the success message after displaying it
+    unset($_SESSION['success_message']);
+}
+
 // Check if the user is already logged in
 if (isset($_SESSION['userid'])) {
     header('Location: dashboard.php');  // Redirect to user dashboard if already logged in
