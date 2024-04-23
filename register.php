@@ -2,38 +2,53 @@
 ob_start(); // Start output buffering
 session_start(); // Start the session
 
-// Check if there's a success message to display
-if (isset($_SESSION['success_message'])) {
-    echo '<p style="color:green;">' . $_SESSION['success_message'] . '</p>';
-    // Unset the success message after displaying it
-    unset($_SESSION['success_message']);
-}
-
 // Include the database connection file
 require_once 'includes/database-connection.php';
 
 $error = ''; // Variable to store error messages
 
+// Fetch security questions for the form
+$questionsStmt = $pdo->query("SELECT questionID, questionText FROM security_questions");
+$securityQuestions = $questionsStmt->fetchAll();
+
 // Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['password'])) {
-    $userEmail = trim($_POST['userEmail']);
-    $password = trim($_POST['password']); // The password the user entered
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['lastName'], $_POST['userEmail'], $_POST['password'])) {
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
-    $phoneNumber = isset($_POST['phoneNumber']) ? trim($_POST['phoneNumber']) : null;
+    $userEmail = trim($_POST['userEmail']);
+    $phoneNumber = trim($_POST['phoneNumber']) ?: null;
+    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT); // Hash the password before storing it
 
-    // SQL to check the existence of the user
-    $sql = "INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)";
+    // Start the transaction
+    $pdo->beginTransaction();
+    try {
+        // SQL to insert the new user with additional fields
+        $stmt = $pdo->prepare("INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, $password]);
+        $userID = $pdo->lastInsertId(); // Get the last inserted ID for the user
 
-    if ($stmt = $pdo->prepare($sql)) {
-        $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, password_hash($password, PASSWORD_DEFAULT)]); // Execute the query
+        // Prepare security answers insertion
+        $stmt = $pdo->prepare("INSERT INTO security_answers (userID, questionID, answerText) VALUES (?, ?, ?)");
 
-        // Redirect to login page with success message
-        $_SESSION['success_message'] = 'Account Created Successfully! You can now login.';
+        // Insert security answers
+        for ($i = 1; $i <= 3; $i++) {
+            $questionID = $_POST["question$i"];
+            $answer = trim($_POST["answer$i"]);
+            $stmt->execute([$userID, $questionID, $answer]);
+        }
+
+        // Commit the transaction
+        $pdo->commit();
+
+        // Set a session variable with the success message
+        $_SESSION['success_message'] = 'Account Created!';
+
+        // Redirect to login page after successful registration
         header('Location: index.php');
         exit();
-    } else {
-        $error = 'Oops! Something went wrong. Please try again later.';
+    } catch (Exception $e) {
+        $pdo->rollback();
+        $error = 'Error creating account: ' . $e->getMessage();
     }
 }
 ob_end_flush(); // End buffering and flush all output
@@ -47,7 +62,9 @@ ob_end_flush(); // End buffering and flush all output
 </head>
 <body>
     <h2>Create New Account</h2>
-    <?php if ($error != '') echo '<p style="color:red;">' . $error . '</p>'; ?>
+    <?php if ($error): ?>
+        <p style="color:red;"><?= $error ?></p>
+    <?php endif; ?>
     <form action="register.php" method="post">
         <div>
             <label for="firstName">First Name:</label>
