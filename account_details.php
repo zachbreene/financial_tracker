@@ -14,46 +14,11 @@ require_once 'includes/database-connection.php';
 $accountID = $_GET['accountID'] ?? null; // Get the accountID from the URL
 
 // Handle POST requests for adding transactions
-/*if (isset($_POST['add'])) {
+if (isset($_POST['add'])) {
     $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID, $_POST['category']]);
     header('Location: account_details.php?accountID=' . $accountID);
     exit();
-}*/
-
-// Handle POST requests for adding transactions
-if (isset($_POST['add'])) {
-    // Start a transaction
-    $pdo->beginTransaction();
-
-    try {
-        // Insert the new transaction into the database
-        $stmt = $pdo->prepare("INSERT INTO transactions (transactionDescription, transactionAmount, transactionDate, transactionType, accountID, categoryID) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $accountID, $_POST['category']]);
-
-        // Update the user's account balance
-        if ($_POST['type'] === 'Expense') {
-            // Deduct the amount from the balance for expenses
-            $updateStmt = $pdo->prepare("UPDATE account SET accountBalance = accountBalance - ? WHERE accountID = ? AND userID = ?");
-            $updateStmt->execute([$_POST['amount'], $accountID, $userID]);
-        } elseif ($_POST['type'] === 'Income') {
-            // Add the amount to the balance for income
-            $updateStmt = $pdo->prepare("UPDATE account SET accountBalance = accountBalance + ? WHERE accountID = ? AND userID = ?");
-            $updateStmt->execute([$_POST['amount'], $accountID, $userID]);
-        }
-
-        // Commit the transaction
-        $pdo->commit();
-
-        // Redirect to the account details page
-        header('Location: account_details.php?accountID=' . $accountID);
-        exit();
-    } catch (Exception $e) {
-        // An error occurred; rollback the transaction
-        $pdo->rollback();
-        // Handle the error (e.g., display an error message)
-        echo "Error: " . $e->getMessage();
-    }
 }
 
 // WOP: Handle POST requests for updating transactions
