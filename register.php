@@ -16,8 +16,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
     $userEmail = trim($_POST['userEmail']);
-    $phoneNumber = trim($_POST['phoneNumber']) ?: null;
     $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT); // Hash the password before storing it
+
+    // Phone number formatting
+    $phoneNumberRaw = $_POST['phoneNumber'] ?? '';
+    $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumberRaw); // Strip non-numeric characters
+    if(strlen($phoneNumber) === 10) {
+        // Format the phone number if it's the proper length
+        $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
+    }
 
     // Start the transaction
     $pdo->beginTransaction();
@@ -80,7 +87,7 @@ ob_end_flush(); // End buffering and flush all output
         </div>
         <div>
             <label for="phoneNumber">Phone Number (optional):</label>
-            <input type="text" name="phoneNumber" id="phoneNumber">
+            <input type="text" name="phoneNumber" id="phoneNumber" placeholder="123-456-7890">
         </div>
         <div>
             <label for="password">Password:</label>
