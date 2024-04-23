@@ -11,12 +11,12 @@ $error = ''; // Variable to store error messages
 $questionsStmt = $pdo->query("SELECT questionID, questionText FROM security_questions");
 $securityQuestions = $questionsStmt->fetchAll();
 
-// Function to check password complexity
+// Function to check password strength
 function isPasswordStrong($password) {
-    // At least one uppercase letter, one lowercase letter, and one number or special character
-    return preg_match('/[A-Z]/', $password) // Uppercase
-        && preg_match('/[a-z]/', $password) // Lowercase
-        && preg_match('/\d|\W/', $password); // Digit or special character
+    return preg_match('/[A-Z]/', $password)      // at least one upper case
+        && preg_match('/[a-z]/', $password)      // at least one lower case
+        && preg_match('/\d/', $password)         // at least one digit
+        || preg_match('/[^a-zA-Z\d]/', $password); // at least one special character
 }
 
 // Check if the form is submitted
@@ -24,14 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
     $userEmail = trim($_POST['userEmail']);
-    if (isPasswordStrong($_POST['password'])) {
-        $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
-        
-        // ... [SQL insert user code] ...
-    } else {
-        $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
-    }
-
     // Phone number formatting
     $phoneNumberRaw = $_POST['phoneNumber'] ?? '';
     $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumberRaw); // Strip non-numeric characters
@@ -39,37 +31,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
         // Format the phone number if it's the proper length
         $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
     }
+    $password = trim($_POST['password']);
 
-    // Start the transaction
-    $pdo->beginTransaction();
-    try {
-        // SQL to insert the new user with additional fields
-        $stmt = $pdo->prepare("INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, $password]);
-        $userID = $pdo->lastInsertId(); // Get the last inserted ID for the user
+    // Check if email already exists
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE userEmail = ?");
+    $stmt->execute([$userEmail]);
+    if ($stmt->rowCount() > 0) {
+        $error = 'An account with this email already exists.';
+    } elseif (!isPasswordStrong($password)) {
+        $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
+    } else {
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Prepare security answers insertion
-        $stmt = $pdo->prepare("INSERT INTO security_answers (userID, questionID, answerText) VALUES (?, ?, ?)");
+        // Start the transaction
+        $pdo->beginTransaction();
+        try {
+            // SQL to insert the new user with additional fields
+            $stmt = $pdo->prepare("INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, $passwordHash]);
+            $userID = $pdo->lastInsertId(); // Get the last inserted ID for the user
 
-        // Insert security answers
-        for ($i = 1; $i <= 3; $i++) {
-            $questionID = $_POST["question$i"];
-            $answer = trim($_POST["answer$i"]);
-            $stmt->execute([$userID, $questionID, $answer]);
+            // Prepare security answers insertion
+            $stmt = $pdo->prepare("INSERT INTO security_answers (userID, questionID, answerText) VALUES (?, ?, ?)");
+
+            // Insert security answers
+            for ($i = 1; $i <= 3; $i++) {
+                $questionID = $_POST["question$i"];
+                $answer = trim($_POST["answer$i"]);
+                $stmt->execute([$userID, $questionID, $answer]);
+            }
+
+            // Commit the transaction
+            $pdo->commit();
+
+            // Set a session variable with the success message
+            $_SESSION['success_message'] = 'Account Created!';
+
+            // Redirect to login page after successful registration
+            header('Location: index.php');
+            exit();
+        } catch (Exception $e) {
+            $pdo->rollback();
+            $error = 'Error creating account: ' . $e->getMessage();
         }
-
-        // Commit the transaction
-        $pdo->commit();
-
-        // Set a session variable with the success message
-        $_SESSION['success_message'] = 'Account Created!';
-
-        // Redirect to login page after successful registration
-        header('Location: index.php');
-        exit();
-    } catch (Exception $e) {
-        $pdo->rollback();
-        $error = 'Error creating account: ' . $e->getMessage();
     }
 }
 ob_end_flush(); // End buffering and flush all output
