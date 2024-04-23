@@ -23,7 +23,7 @@ $error = '';  // Variable to store error messages
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['password'])) {
     $userEmail = trim($_POST['userEmail']);
-    $password = trim($_POST['password']);
+    $password = $_POST['password']; // The password the user entered
 
     // SQL to check the existence of the user
     $sql = "SELECT userID, userEmail, password FROM user WHERE userEmail = ?";
@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
         if ($stmt->rowCount() == 1) {
             $user = $stmt->fetch();
 
-            // Check the password (plaintext comparison)
-            if ($password === $user['password']) {
+            // Verify the password against the hashed password in the database
+            if (password_verify($password, $user['password'])) {
                 // Password is correct, start the session
                 $_SESSION['userid'] = $user['userID'];
                 $_SESSION['userEmail'] = $user['userEmail'];
@@ -44,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
                 // Redirect to the user dashboard
                 header('Location: dashboard.php');
                 exit();
-                ob_end_flush();   // End buffering and flush all output
             } else {
                 $error = 'Invalid password.';
             }
@@ -56,6 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail'], $_POST['p
     }
 }
 
+// Make sure to end the buffering before sending the HTML output
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="en">
