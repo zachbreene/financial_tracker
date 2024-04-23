@@ -11,12 +11,26 @@ $error = ''; // Variable to store error messages
 $questionsStmt = $pdo->query("SELECT questionID, questionText FROM security_questions");
 $securityQuestions = $questionsStmt->fetchAll();
 
+// Function to check password complexity
+function isPasswordStrong($password) {
+    // At least one uppercase letter, one lowercase letter, and one number or special character
+    return preg_match('/[A-Z]/', $password) // Uppercase
+        && preg_match('/[a-z]/', $password) // Lowercase
+        && preg_match('/\d|\W/', $password); // Digit or special character
+}
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['lastName'], $_POST['userEmail'], $_POST['password'])) {
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
     $userEmail = trim($_POST['userEmail']);
-    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT); // Hash the password before storing it
+    if (isPasswordStrong($_POST['password'])) {
+        $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+        
+        // ... [SQL insert user code] ...
+    } else {
+        $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
+    }
 
     // Phone number formatting
     $phoneNumberRaw = $_POST['phoneNumber'] ?? '';
