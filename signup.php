@@ -19,6 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
     $securityQuestion = trim($_POST['securityQuestion']);
     $securityAnswer = trim($_POST['securityAnswer']);
 
+    // Phone number formatting
+    if (!empty($phoneNumber)) {
+        $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumber); // Strip non-numeric characters
+        if (strlen($phoneNumber) === 10) {
+            // Format the phone number if it's the proper length
+            $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
+        } else {
+            $error = 'Invalid phone number format.';
+        }
+    }
+
     // SQL to check if the email already exists
     $sql = "SELECT userID FROM user WHERE userEmail = ?";
     $stmt = $pdo->prepare($sql);
