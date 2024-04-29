@@ -1,6 +1,7 @@
 <?php
 // Start the session
 session_start();
+ob_start();
 
 // Include the database connection file
 require_once 'includes/database-connection.php';
@@ -45,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_budget'])) {
 $budgetsStmt = $pdo->prepare("SELECT b.budgetID, c.categoryName, b.budgetLimit, b.budgetInterval, b.startDate, b.endDate FROM budget b INNER JOIN category c ON b.categoryID = c.categoryID WHERE b.userID = ?");
 $budgetsStmt->execute([$userID]);
 $budgets = $budgetsStmt->fetchAll();
-
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>

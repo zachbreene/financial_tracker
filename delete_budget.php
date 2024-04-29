@@ -1,5 +1,6 @@
 <?php
 session_start();
+ob_start();
 require_once 'includes/database-connection.php';
 
 if (!isset($_SESSION['userid'])) {
@@ -23,4 +24,5 @@ if ($budgetID) {
 
 header("Location: manage_budgets.php");
 exit();
+ob_end_flush();
 ?>

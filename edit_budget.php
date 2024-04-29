@@ -1,6 +1,7 @@
 <?php
 // Start the session
 session_start();
+ob_start();
 
 // Include the database connection file
 require_once 'includes/database-connection.php';
@@ -53,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_budget'])) {
         $error = 'Failed to update budget.';
     }
 }
-
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
