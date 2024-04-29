@@ -27,56 +27,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
     $securityQuestion = trim($_POST['securityQuestion']);
     $securityAnswer = trim($_POST['securityAnswer']);
 
-    // Phone number formatting and validation
-    if (!empty($phoneNumber)) {
-        $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumber); // Strip non-numeric characters
-        if (strlen($phoneNumber) === 10) {
-            // Format the phone number if it's the proper length
-            $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
-        } else {
-            $error = 'Invalid phone number format.';
+    // Validate email format
+    if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Invalid email format.';
+    } else {
+        // Phone number formatting and validation
+        if (!empty($phoneNumber)) {
+            $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumber); // Strip non-numeric characters
+            if (strlen($phoneNumber) === 10) {
+                // Format the phone number if it's the proper length
+                $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
+            } else {
+                $error = 'Invalid phone number format.';
+            }
         }
-    }
 
-    // Check if email already exists
-    if (!$error) {
-        $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
-        $stmt->execute([$userEmail]);
-        if ($stmt->rowCount() > 0) {
-            $error = 'Email already exists.';
+        // Check if email already exists
+        if (!$error) {
+            $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
+            $stmt->execute([$userEmail]);
+            if ($stmt->rowCount() > 0) {
+                $error = 'Email already exists.';
+            }
         }
-    }
 
-    if (!$error && !isPasswordStrong($password)) {
-        $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
-    }
+        if (!$error && !isPasswordStrong($password)) {
+            $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
+        }
 
-    if (!$error) {
-        // Proceed with the user registration if there are no errors
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        if (!$error) {
+            // Proceed with the user registration if there are no errors
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insert new user into the database including security question and answer
-        $sql = "INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $inserted = $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, $passwordHash]);
-
-        if ($inserted) {
-            $userID = $pdo->lastInsertId();
-            $sql = "INSERT INTO security_answers (userID, questionID, answerText) VALUES (?, ?, ?)";
+            // Insert new user into the database including security question and answer
+            $sql = "INSERT INTO user (firstName, lastName, userEmail, phoneNumber, password) VALUES (?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$userID, $securityQuestion, $securityAnswer]);
+            $inserted = $stmt->execute([$firstName, $lastName, $userEmail, $phoneNumber, $passwordHash]);
 
-            $success = 'User registered successfully!';
-            // Optionally redirect to login or dashboard page
-            // header('Location: index.php');
-        } else {
-            $error = 'Failed to register user. Please try again.';
+            if ($inserted) {
+                $userID = $pdo->lastInsertId();
+                $sql = "INSERT INTO security_answers (userID, questionID, answerText) VALUES (?, ?, ?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$userID, $securityQuestion, $securityAnswer]);
+
+                $success = 'User registered successfully!';
+                // Optionally redirect to login or dashboard page
+                // header('Location: index.php');
+            } else {
+                $error = 'Failed to register user. Please try again.';
+            }
         }
     }
 }
 
 ob_end_flush();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
