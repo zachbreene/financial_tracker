@@ -9,6 +9,14 @@ require_once 'includes/database-connection.php';
 $error = '';  // Variable to store error messages
 $success = '';  // Variable to store success message
 
+// Function to check password strength
+function isPasswordStrong($password) {
+    return preg_match('/[A-Z]/', $password)      // at least one uppercase letter
+        && preg_match('/[a-z]/', $password)      // at least one lowercase letter
+        && (preg_match('/\d/', $password)        // at least one digit
+            || preg_match('/\W/', $password));   // or special character
+}
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['lastName'], $_POST['userEmail'], $_POST['phoneNumber'], $_POST['password'], $_POST['securityQuestion'], $_POST['securityAnswer'])) {
     $firstName = trim($_POST['firstName']);
@@ -30,13 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
         }
     }
 
-    // SQL to check if the email already exists
-    $sql = "SELECT userID FROM user WHERE userEmail = ?";
-    $stmt = $pdo->prepare($sql);
+// Check if email already exists
+    $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
     $stmt->execute([$userEmail]);
-
     if ($stmt->rowCount() > 0) {
         $error = 'Email already exists.';
+    } elseif (!isPasswordStrong($password)) {
+        $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
     } else {
         // Hash the password
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -63,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
 
 ob_end_flush();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,7 +81,7 @@ ob_end_flush();
 </head>
 <body>
     <div class="container">
-        <h2>Sign Up</h2>
+        <h2>Sign Up</h2><br><br>
         <?php
         if ($error != '') {
             echo '<p style="color:red;">' . $error . '</p>';
@@ -120,6 +129,7 @@ ob_end_flush();
                 </select>
 
             </div>
+            <br>
             <div class="input-group">
                 <input type="text" name="securityAnswer" id="securityAnswer" required placeholder="Answer">
                 <label for="securityAnswer">Your Answer:</label>
