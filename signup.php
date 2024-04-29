@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
     $securityQuestion = trim($_POST['securityQuestion']);
     $securityAnswer = trim($_POST['securityAnswer']);
 
-    // Phone number formatting
+    // Phone number formatting and validation
     if (!empty($phoneNumber)) {
         $phoneNumber = preg_replace("/[^0-9]/", "", $phoneNumber); // Strip non-numeric characters
         if (strlen($phoneNumber) === 10) {
@@ -38,15 +38,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
         }
     }
 
-// Check if email already exists
-    $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
-    $stmt->execute([$userEmail]);
-    if ($stmt->rowCount() > 0) {
-        $error = 'Email already exists.';
-    } elseif (!isPasswordStrong($password)) {
+    // Check if email already exists
+    if (!$error) {
+        $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
+        $stmt->execute([$userEmail]);
+        if ($stmt->rowCount() > 0) {
+            $error = 'Email already exists.';
+        }
+    }
+
+    if (!$error && !isPasswordStrong($password)) {
         $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.';
-    } else {
-        // Hash the password
+    }
+
+    if (!$error) {
+        // Proceed with the user registration if there are no errors
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert new user into the database including security question and answer
@@ -81,7 +87,7 @@ ob_end_flush();
 </head>
 <body>
     <div class="container">
-        <h2>Sign Up</h2><br><br>
+        <h2>Sign Up</h2><br>
         <?php
         if ($error != '') {
             echo '<p style="color:red;">' . $error . '</p>';
@@ -137,6 +143,7 @@ ob_end_flush();
             <div>
                 <button type="submit" class="btn">Register</button>
             </div>
+            <br>
             <div class="form-footer">
                 <p>Already have an account? <a href="index.php" style="text-decoration: underline;">Login</a></p>
             </div>
