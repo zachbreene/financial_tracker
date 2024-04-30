@@ -89,6 +89,48 @@ function fetchCurrentBalance($accountID) {
     return $balanceStmt->fetchColumn();
 }
 
+// Modify the fetchTransactions function to include filters
+function fetchTransactions($accountID, $categoryFilter = '', $amountMin = '', $amountMax = '', $dateStart = '', $dateEnd = '', $search = '', $sort = 'transactionDate', $order = 'DESC') {
+    global $pdo;
+
+    $queryParams = [$accountID];
+    $query = "SELECT t.transactionID, t.transactionDescription, t.transactionAmount, t.transactionDate, t.transactionType, c.categoryName 
+              FROM transactions t 
+              LEFT JOIN category c ON t.categoryID = c.categoryID 
+              WHERE t.accountID = ?";
+
+    if ($categoryFilter) {
+        $query .= " AND c.categoryID = ?";
+        $queryParams[] = $categoryFilter;
+    }
+    if ($amountMin !== '') {
+        $query .= " AND t.transactionAmount >= ?";
+        $queryParams[] = $amountMin;
+    }
+    if ($amountMax !== '') {
+        $query .= " AND t.transactionAmount <= ?";
+        $queryParams[] = $amountMax;
+    }
+    if ($dateStart) {
+        $query .= " AND t.transactionDate >= ?";
+        $queryParams[] = $dateStart;
+    }
+    if ($dateEnd) {
+        $query .= " AND t.transactionDate <= ?";
+        $queryParams[] = $dateEnd;
+    }
+    if ($search) {
+        $query .= " AND (t.transactionDescription LIKE ? OR t.transactionAmount LIKE ?)";
+        $queryParams[] = '%' . $search . '%';
+        $queryParams[] = '%' . $search . '%';
+    }
+
+    $query .= " ORDER BY $sort $order";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($queryParams);
+    return $stmt->fetchAll();
+}
+
 if (isset($_POST['add'])) {
     addTransaction($_GET['accountID'], $_POST['description'], $_POST['amount'], $_POST['date'], $_POST['type'], $_POST['category']);
 }
@@ -194,6 +236,29 @@ ob_end_flush(); // End output buffering and flush all output
         </select>
         <br>
         <button type="submit" name="add">Add Transaction</button>
+    </form>
+    <br>
+    <h2>Filter Transactions</h2>
+    <form method="post" action="">
+        <label for="categoryFilter">Category:</label>
+        <select name="categoryFilter" id="categoryFilter">
+            <option value="">All Categories</option>
+            <?php
+                // Assume $categories contains all categories as before
+                foreach ($categories as $category) {
+                    echo '<option value="' . $category['categoryID'] . '">' . htmlspecialchars($category['categoryName']) . '</option>';
+                }
+            ?>
+        </select>
+        <label for="amountMin">Min Amount:</label>
+        <input type="number" name="amountMin" id="amountMin" placeholder="0">
+        <label for="amountMax">Max Amount:</label>
+        <input type="number" name="amountMax" id="amountMax" placeholder="No Limit">
+        <label for="dateStart">Start Date:</label>
+        <input type="date" name="dateStart" id="dateStart">
+        <label for="dateEnd">End Date:</label>
+        <input type="date" name="dateEnd" id="dateEnd">
+        <button type="submit">Apply Filters</button>
     </form>
     <br>
     <h2>Transactions</h2>

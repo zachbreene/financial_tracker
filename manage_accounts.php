@@ -80,7 +80,7 @@ ob_end_flush(); // End output buffering and flush all output
             </ul>
     </div>
     <h1>Account Management</h1>
-    <br><br>
+    <br>
     <h2>Your Accounts</h2>
     <table>
         <thead>
