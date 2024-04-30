@@ -32,6 +32,14 @@ function addTransaction($accountID, $description, $amount, $date, $type, $catego
     exit();
 }
 
+// Handle logout action
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    // Destroy the session and redirect to login page
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+
 // Function to update account balance
 function updateAccountBalance($accountID, $transactionAmount) {
     global $pdo;
@@ -246,7 +254,14 @@ ob_end_flush(); // End output buffering and flush all output
         <label for="categoryFilter">Category:</label>
         <select name="categoryFilter" id="categoryFilter">
             <option value="">All Categories</option>
-            <!-- ... populate as before ... -->
+            <?php
+            $categoriesStmt = $pdo->prepare("SELECT categoryID, categoryName FROM category");
+            $categoriesStmt->execute();
+            $categories = $categoriesStmt->fetchAll();
+            foreach ($categories as $category) {
+                echo '<option value="' . $category['categoryID'] . '">' . htmlspecialchars($category['categoryName']) . '</option>';
+            }
+            ?>
         </select>
 
         <label for="amountMin">Minimum Amount:</label>
@@ -262,6 +277,7 @@ ob_end_flush(); // End output buffering and flush all output
         <input type="date" name="dateEnd" id="dateEnd">
 
         <button type="submit">Apply Filters</button>
+        <button type="button" onclick="resetFilters()">Reset Filters</button>
     </form>
     <br>
     <h2>Transactions</h2>
@@ -291,5 +307,11 @@ ob_end_flush(); // End output buffering and flush all output
             <?php endforeach; ?>
         </tbody>
     </table>
+    <script>
+    function resetFilters() {
+        document.getElementById('filterForm').reset();
+        window.location.href = window.location.pathname;
+    }
+    </script>
 </body>
 </html>

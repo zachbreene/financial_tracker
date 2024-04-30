@@ -34,6 +34,14 @@ if (isset($_GET['deleteAccount'])) {
     exit();
 }
 
+// Handle logout action
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    // Destroy the session and redirect to login page
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+
 
 // Fetch all accounts associated with the logged-in user
 $accountsStmt = $pdo->prepare("SELECT accountID, accountType, accountBalance FROM account WHERE userID = ?");
