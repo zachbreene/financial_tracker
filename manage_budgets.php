@@ -56,7 +56,6 @@ function calculateBudgetStatus($userID, $pdo) {
     foreach ($budgets as $budget) {
         $endDate = new DateTime($budget['endDate']);
         $startDate = new DateTime($budget['startDate']);
-        $timeLeft = $today->diff($endDate)->format("%a days");
 
         // Calculate the total expenses in this category within the budget period
         $expensesStmt = $pdo->prepare("SELECT SUM(transactionAmount) as totalSpent
@@ -65,13 +64,13 @@ function calculateBudgetStatus($userID, $pdo) {
                                        WHERE t.categoryID = ? AND t.transactionDate BETWEEN ? AND ? AND t.transactionType = 'Expense' AND a.userID = ?");
         $expensesStmt->execute([$budget['categoryID'], $budget['startDate'], $budget['endDate'], $userID]);
         $expenses = $expensesStmt->fetch();
-        $totalSpent = $expenses['totalSpent'] ?: 0;
+        $totalSpent = abs($expenses['totalSpent']) ?: 0; // Convert to positive if necessary
         $remainingBudget = $budget['budgetLimit'] - $totalSpent;
 
         $statusMessage = '';
         if ($remainingBudget < 0) {
-            $remainingBudget = "Over Budget";
             $statusMessage = 'red';
+            $remainingBudget = "Over Budget";
         } else {
             $remainingBudget = "$" . number_format($remainingBudget, 2);
         }
@@ -79,6 +78,8 @@ function calculateBudgetStatus($userID, $pdo) {
         if ($endDate < $today) {
             $timeLeft = "Budget Expired";
             $statusMessage = 'red';
+        } else {
+            $timeLeft = $today->diff($endDate)->format("%a days");
         }
 
         $budgetStatus[] = [
@@ -95,6 +96,7 @@ function calculateBudgetStatus($userID, $pdo) {
 
     return $budgetStatus;
 }
+
 
 
 $budgetStatus = calculateBudgetStatus($userID, $pdo);
@@ -215,26 +217,20 @@ ob_end_flush();
         <thead>
             <tr>
                 <th>Category</th>
-                <th>Total Budget</th>
                 <th>Remaining Budget</th>
                 <th>Time Left</th>
-                <th>Start Date</th>
-                <th>End Date</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($budgetStatus as $status): ?>
             <tr>
                 <td><?= htmlspecialchars($status['categoryName']) ?></td>
-                <td>$<?= number_format($status['budgetLimit'], 2) ?></td>
                 <td style="color: <?= $status['statusMessage'] == 'red' ? 'red' : 'black'; ?>;">
                     <?= $status['remainingBudget'] ?>
                 </td>
                 <td style="color: <?= $status['statusMessage'] == 'red' ? 'red' : 'black'; ?>;">
                     <?= $status['timeLeft'] ?>
                 </td>
-                <td><?= $status['startDate'] ?></td>
-                <td><?= $status['endDate'] ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
