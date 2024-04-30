@@ -55,10 +55,19 @@ ob_end_flush();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Budgets</title>
+    <link href="style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-<h1>Manage Budgets</h1>
-    <a href="dashboard.php">Back to Dashboard</a>
+    <!--Fixed Sticky Navigation Bar-->
+    <div tabindex="0" id="navcontainer">
+            <ul class="navbar">
+                <li class="navlist" id="dashboardHover"><a class="active" href="dashboard.php">Dashboard</a></li>
+                <li class="navlist" id="accountHover"><a href="manage_accounts.php">Manage Accounts</a></li>
+                <li class="navlist" id="budgetHover"><a href="manage_budgets.php">Manage Budgets</a></li>
+                <li style="float:right" class="navlist" id="logoutHover"><a href="?action=logout">Logout</a></li>
+            </ul>
+    </div>
+    <h1>Manage Budgets</h1>
     
     <!-- Form to add a new budget -->
     <h2>Add New Budget</h2>

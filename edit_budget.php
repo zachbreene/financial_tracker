@@ -64,8 +64,7 @@ ob_end_flush();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Budget</title>
     <!-- Your CSS file link -->
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <link href="style.css" type="text/css" rel="stylesheet"></head>
 <body>
 <h1>Edit Budget</h1>
     <a href="manage_budgets.php">Back to Budgets</a>

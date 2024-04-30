@@ -49,6 +49,7 @@ ob_end_flush(); // End output buffering and flush all output
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Accounts</title>
+    <link href="style.css" type="text/css" rel="stylesheet">
     <!-- CSS styling for the page -->
     <style>
         body {
@@ -69,6 +70,15 @@ ob_end_flush(); // End output buffering and flush all output
     </style>
 </head>
 <body>
+    <!--Fixed Sticky Navigation Bar-->
+    <div tabindex="0" id="navcontainer">
+            <ul class="navbar">
+                <li class="navlist" id="dashboardHover"><a class="active" href="dashboard.php">Dashboard</a></li>
+                <li class="navlist" id="accountHover"><a href="manage_accounts.php">Manage Accounts</a></li>
+                <li class="navlist" id="budgetHover"><a href="manage_budgets.php">Manage Budgets</a></li>
+                <li style="float:right" class="navlist" id="logoutHover"><a href="?action=logout">Logout</a></li>
+            </ul>
+    </div>
     <h1>Account Management</h1>
     <a href="dashboard.php">Back to Dashboard</a>
     <h2>Your Accounts</h2>
