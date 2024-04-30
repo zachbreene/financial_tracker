@@ -52,6 +52,12 @@ ob_end_flush();
     <meta charset="UTF-8">
     <title>Forgot Password</title>
     <link rel="stylesheet" href="login-style.css">
+    <style>
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -59,6 +65,8 @@ ob_end_flush();
         <?php if ($error): ?>
             <p style="color: red;"><?= $error ?></p>
         <?php endif; ?>
+        <br>
+        <h3>Enter your Email</h3>
         <form action="forgotpassword.php" method="post" id="forgotForm">
             <div class="input-group">
                 <input type="email" name="userEmail" id="userEmail" value="<?= htmlspecialchars($userEmail) ?>" required placeholder="Email" <?= $question ? 'readonly' : '' ?>>
@@ -73,6 +81,7 @@ ob_end_flush();
                 <button type="submit" class="btn"><?= $question ? 'Submit Answer' : 'Get Question' ?></button>
             </div>
         </form>
+        <br>
         <div class="form-footer">
             <a href="index.php" style="text-decoration: underline;">Log in</a>
         </div>

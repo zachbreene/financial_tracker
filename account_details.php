@@ -217,7 +217,6 @@ ob_end_flush(); // End output buffering and flush all output
     </div>
     <h1>Account Transactions</h1>
     <br>
-    <br>
     <h2>Current Balance: $<?= number_format($currentBalance, 2) ?></h2>
     <br>
     <h2>Transactions Search</h2>
@@ -308,10 +307,10 @@ ob_end_flush(); // End output buffering and flush all output
         </tbody>
     </table>
     <script>
-    function resetFilters() {
-        document.getElementById('filterForm').reset();
-        window.location.href = window.location.pathname;
-    }
+    <script>
+        function resetFilters() {
+            window.location.href = 'account_details.php?accountID=' + <?= json_encode($accountID) ?>;
+        }
     </script>
 </body>
 </html>
