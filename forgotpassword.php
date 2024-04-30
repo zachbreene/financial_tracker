@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail']) && empty(
         $_SESSION['questionID'] = $result['questionID'];
         $question = $result['questionText'];
     } else {
-        $error = "No user found with that email or no security question set.";
+        $error = "No user found with that email or no security question set. <br>";
     }
 } elseif ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['securityAnswer'], $_SESSION['userEmail'], $_SESSION['questionID'])) {
     $userEmail = $_SESSION['userEmail'];
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['userEmail']) && empty(
         header('Location: resetpassword.php'); // Assume resetpassword.php is your password reset page
         exit();
     } else {
-        $error = "Incorrect answer. Please try again.";
+        $error = "Incorrect answer. Please try again. <br>";
     }
 }
 ob_end_flush();

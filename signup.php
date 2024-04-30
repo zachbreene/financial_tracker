@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
 
     // Validate email format
     if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Invalid email format.' <br>;
+        $error = 'Invalid email format. <br>';
     } else {
         // Phone number formatting and validation
         if (!empty($phoneNumber)) {
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
                 // Format the phone number if it's the proper length
                 $phoneNumber = substr($phoneNumber, 0, 3) . '-' . substr($phoneNumber, 3, 3) . '-' . substr($phoneNumber, 6);
             } else {
-                $error = 'Invalid phone number format.' <br>;
+                $error = 'Invalid phone number format. <br>';
             }
         }
 
@@ -47,12 +47,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
             $stmt = $pdo->prepare("SELECT userID FROM user WHERE userEmail = ?");
             $stmt->execute([$userEmail]);
             if ($stmt->rowCount() > 0) {
-                $error = 'Email already exists.' <br>;
+                $error = 'Email already exists. <br>';
             }
         }
 
         if (!$error && !isPasswordStrong($password)) {
-            $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character.' <br><br>;
+            $error = 'Password must include at least one uppercase letter, one lowercase letter, and one number or special character. <br><br>';
         }
 
         if (!$error) {
@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['firstName'], $_POST['l
                 // Optionally redirect to login or dashboard page
                 // header('Location: index.php');
             } else {
-                $error = 'Failed to register user. Please try again.' <br>;
+                $error = 'Failed to register user. Please try again. <br>';
             }
         }
     }
