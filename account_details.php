@@ -164,15 +164,15 @@ ob_end_flush(); // End output buffering and flush all output
     </div>
     <h1>Account Transactions</h1>
     <a href="manage_accounts.php">Back to Accounts</a>
-
+    <br>
     <h2>Current Balance: $<?= number_format($currentBalance, 2) ?></h2>
-
+    <br>
     <h2>Transactions Search</h2>
     <form method="post" action="">
         <input type="text" name="search" placeholder="Search transactions...">
         <button type="submit">Search</button>
     </form>
-
+    <br>
     <h2>Add New Transaction</h2>
     <form method="post" action="">
         <input type="text" name="description" placeholder="Description">
@@ -192,9 +192,10 @@ ob_end_flush(); // End output buffering and flush all output
             }
             ?>
         </select>
+        <br>
         <button type="submit" name="add">Add Transaction</button>
     </form>
-
+    <br>
     <h2>Transactions</h2>
     <table>
         <thead>

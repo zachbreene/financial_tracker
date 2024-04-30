@@ -77,7 +77,9 @@ ob_end_flush();
     <?php endif; ?>
 
     <!-- Form to edit an existing budget -->
+    <br>
     <h2>Edit Budget</h2>
+    <br>
     <form action="edit_budget.php?budgetID=<?= $budgetID ?>" method="post">
         <label for="categoryID">Category:</label>
         <select id="categoryID" name="categoryID" required>

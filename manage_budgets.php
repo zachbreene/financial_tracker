@@ -68,7 +68,7 @@ ob_end_flush();
             </ul>
     </div>
     <h1>Manage Budgets</h1>
-    
+    <br>
     <!-- Form to add a new budget -->
     <h2>Add New Budget</h2>
     <form action="manage_budgets.php" method="post">
@@ -97,9 +97,10 @@ ob_end_flush();
 
         <button type="submit" name="submit_budget">Add Budget</button>
     </form>
-    
+    <br>
     <!-- Table to list all budgets -->
     <h2>Your Budgets</h2>
+    <br>
     <table>
         <thead>
             <tr>

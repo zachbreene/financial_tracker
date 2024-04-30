@@ -80,7 +80,7 @@ ob_end_flush(); // End output buffering and flush all output
             </ul>
     </div>
     <h1>Account Management</h1>
-    <a href="dashboard.php">Back to Dashboard</a>
+    <br><br>
     <h2>Your Accounts</h2>
     <table>
         <thead>
@@ -105,6 +105,7 @@ ob_end_flush(); // End output buffering and flush all output
             <?php endforeach; ?>
         </tbody>
     </table>
+    <br>
     <!-- Form to add a new account -->
     <h2>Add New Account</h2>
     <form action="manage_accounts.php" method="post">
