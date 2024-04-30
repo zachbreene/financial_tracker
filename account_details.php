@@ -250,7 +250,7 @@ ob_end_flush(); // End output buffering and flush all output
     </form>
     <br>
     <h2>Filter Transactions</h2>
-    <form method="post" action="">
+    <form method="post" action="" id="filterForm">
         <label for="categoryFilter">Category:</label>
         <select name="categoryFilter" id="categoryFilter">
             <option value="">All Categories</option>

@@ -65,6 +65,28 @@ ob_end_flush();
     <title>Edit Budget</title>
     <!-- Your CSS file link -->
     <link href="style.css" type="text/css" rel="stylesheet"></head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
 <body>
 <h1>Edit Budget</h1>
     <a href="manage_budgets.php">Back to Budgets</a>

@@ -89,7 +89,7 @@ ob_end_flush();
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login-style.css">
 </head>
 <body>
     <div class="container">
