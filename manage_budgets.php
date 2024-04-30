@@ -69,7 +69,7 @@ function calculateBudgetStatus($userID, $pdo) {
         $remainingBudget = $budget['budgetLimit'] + $totalSpent; // Add because totalSpent is negative for expenses
 
         $statusMessage = '';
-        if ($remainingBudget < 0) {
+        if ($remainingBudget <= 0) {
             $statusMessage = 'red';
             $remainingBudget = "Over Budget";
         } else {
