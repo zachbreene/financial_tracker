@@ -42,6 +42,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_budget'])) {
     exit();
 }
 
+// Function to calculate remaining budget and time left for each budget
+function calculateBudgetStatus($userID, $pdo) {
+    $budgetsStmt = $pdo->prepare("SELECT b.budgetID, c.categoryName, b.budgetLimit, b.budgetInterval, b.startDate, b.endDate, c.categoryID
+                                  FROM budget b
+                                  INNER JOIN category c ON b.categoryID = c.categoryID
+                                  WHERE b.userID = ?");
+    $budgetsStmt->execute([$userID]);
+    $budgets = $budgetsStmt->fetchAll();
+
+    $today = new DateTime();
+    $budgetStatus = [];
+
+    foreach ($budgets as $budget) {
+        $endDate = new DateTime($budget['endDate']);
+        $startDate = new DateTime($budget['startDate']);
+        $timeLeft = $today->diff($endDate)->format("%a days");
+
+        // Calculate the total expenses in this category within the budget period
+        $expensesStmt = $pdo->prepare("SELECT SUM(transactionAmount) as totalSpent
+                                       FROM transactions t
+                                       INNER JOIN account a ON t.accountID = a.accountID
+                                       WHERE t.categoryID = ? AND t.transactionDate BETWEEN ? AND ? AND t.transactionType = 'Expense' AND a.userID = ?");
+        $expensesStmt->execute([$budget['categoryID'], $budget['startDate'], $budget['endDate'], $userID]);
+        $expenses = $expensesStmt->fetch();
+        $totalSpent = $expenses['totalSpent'] ?: 0;
+        $remainingBudget = $budget['budgetLimit'] - $totalSpent;
+
+        $budgetStatus[] = [
+            'categoryName' => $budget['categoryName'],
+            'budgetLimit' => $budget['budgetLimit'],
+            'remainingBudget' => $remainingBudget,
+            'timeLeft' => $timeLeft,
+            'startDate' => $startDate->format("Y-m-d"),
+            'endDate' => $endDate->format("Y-m-d"),
+            'budgetInterval' => $budget['budgetInterval']
+        ];
+    }
+
+    return $budgetStatus;
+}
+
+$budgetStatus = calculateBudgetStatus($userID, $pdo);
+
 // Retrieve existing budgets for the user
 $budgetsStmt = $pdo->prepare("SELECT b.budgetID, c.categoryName, b.budgetLimit, b.budgetInterval, b.startDate, b.endDate FROM budget b INNER JOIN category c ON b.categoryID = c.categoryID WHERE b.userID = ?");
 $budgetsStmt->execute([$userID]);
@@ -148,6 +191,32 @@ ob_end_flush();
                     <!-- Delete link -->
                     <a href="delete_budget.php?budgetID=<?= $budget['budgetID'] ?>" onclick="return confirm('Are you sure you want to delete this budget?');">Delete</a>
                 </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <br>
+    <h2>Budget Timeline</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Total Budget</th>
+                <th>Remaining Budget</th>
+                <th>Time Left</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($budgetStatus as $status): ?>
+            <tr>
+                <td><?= htmlspecialchars($status['categoryName']) ?></td>
+                <td>$<?= number_format($status['budgetLimit'], 2) ?></td>
+                <td>$<?= number_format($status['remainingBudget'], 2) ?></td>
+                <td><?= $status['timeLeft'] ?></td>
+                <td><?= $status['startDate'] ?></td>
+                <td><?= $status['endDate'] ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
