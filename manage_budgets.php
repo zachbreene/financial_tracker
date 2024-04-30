@@ -42,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_budget'])) {
     exit();
 }
 
-// Function to calculate remaining budget and time left for each budget
 function calculateBudgetStatus($userID, $pdo) {
     $budgetsStmt = $pdo->prepare("SELECT b.budgetID, c.categoryName, b.budgetLimit, b.budgetInterval, b.startDate, b.endDate, c.categoryID
                                   FROM budget b
@@ -69,6 +68,19 @@ function calculateBudgetStatus($userID, $pdo) {
         $totalSpent = $expenses['totalSpent'] ?: 0;
         $remainingBudget = $budget['budgetLimit'] - $totalSpent;
 
+        $statusMessage = '';
+        if ($remainingBudget < 0) {
+            $remainingBudget = "Over Budget";
+            $statusMessage = 'red';
+        } else {
+            $remainingBudget = "$" . number_format($remainingBudget, 2);
+        }
+
+        if ($endDate < $today) {
+            $timeLeft = "Budget Expired";
+            $statusMessage = 'red';
+        }
+
         $budgetStatus[] = [
             'categoryName' => $budget['categoryName'],
             'budgetLimit' => $budget['budgetLimit'],
@@ -76,12 +88,14 @@ function calculateBudgetStatus($userID, $pdo) {
             'timeLeft' => $timeLeft,
             'startDate' => $startDate->format("Y-m-d"),
             'endDate' => $endDate->format("Y-m-d"),
-            'budgetInterval' => $budget['budgetInterval']
+            'budgetInterval' => $budget['budgetInterval'],
+            'statusMessage' => $statusMessage
         ];
     }
 
     return $budgetStatus;
 }
+
 
 $budgetStatus = calculateBudgetStatus($userID, $pdo);
 
@@ -213,8 +227,12 @@ ob_end_flush();
             <tr>
                 <td><?= htmlspecialchars($status['categoryName']) ?></td>
                 <td>$<?= number_format($status['budgetLimit'], 2) ?></td>
-                <td>$<?= number_format($status['remainingBudget'], 2) ?></td>
-                <td><?= $status['timeLeft'] ?></td>
+                <td style="color: <?= $status['statusMessage'] == 'red' ? 'red' : 'black'; ?>;">
+                    <?= $status['remainingBudget'] ?>
+                </td>
+                <td style="color: <?= $status['statusMessage'] == 'red' ? 'red' : 'black'; ?>;">
+                    <?= $status['timeLeft'] ?>
+                </td>
                 <td><?= $status['startDate'] ?></td>
                 <td><?= $status['endDate'] ?></td>
             </tr>
