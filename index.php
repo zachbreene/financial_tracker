@@ -48,7 +48,7 @@ ob_end_flush();
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link href="style.css" type="text/css" rel="stylesheet">    <style>
+    <link href="login-style.css" type="text/css" rel="stylesheet">    <style>
         .btn {
             margin-top: 10px; /* Adds vertical spacing above each button */
         }
