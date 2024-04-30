@@ -72,33 +72,17 @@ function deleteTransaction($accountID, $transactionID) {
     exit();
 }
 // Fetch transactions for the selected account
-function fetchTransactions($accountID, $search = '', $sort = 'transactionDate', $order = 'DESC') {
-    global $pdo;
-
-    $transactionsStmt = $pdo->prepare("SELECT t.transactionID, t.transactionDescription, t.transactionAmount, t.transactionDate, t.transactionType, c.categoryName FROM transactions t LEFT JOIN category c ON t.categoryID = c.categoryID WHERE t.accountID = ? AND (t.transactionDescription LIKE ? OR t.transactionAmount LIKE ?) ORDER BY $sort $order");
-    $transactionsStmt->execute([$accountID, '%' . $search . '%', '%' . $search . '%']);
-    return $transactionsStmt->fetchAll();
-}
-
-// Fetch the current balance from the account table
-function fetchCurrentBalance($accountID) {
-    global $pdo;
-
-    $balanceStmt = $pdo->prepare("SELECT accountBalance FROM account WHERE accountID = ?");
-    $balanceStmt->execute([$accountID]);
-    return $balanceStmt->fetchColumn();
-}
-
-// Modify the fetchTransactions function to include filters
 function fetchTransactions($accountID, $categoryFilter = '', $amountMin = '', $amountMax = '', $dateStart = '', $dateEnd = '', $search = '', $sort = 'transactionDate', $order = 'DESC') {
     global $pdo;
 
-    $queryParams = [$accountID];
+    // Start building the query
+    $queryParams = [$accountID]; // Begin with account ID
     $query = "SELECT t.transactionID, t.transactionDescription, t.transactionAmount, t.transactionDate, t.transactionType, c.categoryName 
               FROM transactions t 
               LEFT JOIN category c ON t.categoryID = c.categoryID 
               WHERE t.accountID = ?";
 
+    // Add additional filters to the query
     if ($categoryFilter) {
         $query .= " AND c.categoryID = ?";
         $queryParams[] = $categoryFilter;
@@ -125,10 +109,29 @@ function fetchTransactions($accountID, $categoryFilter = '', $amountMin = '', $a
         $queryParams[] = '%' . $search . '%';
     }
 
+    // Add sorting to the query
     $query .= " ORDER BY $sort $order";
+    
     $stmt = $pdo->prepare($query);
     $stmt->execute($queryParams);
+    
     return $stmt->fetchAll();
+}
+
+// Capture filter inputs from the POST request and apply them to the fetchTransactions call
+$categoryFilter = $_POST['categoryFilter'] ?? '';
+$amountMin = $_POST['amountMin'] ?? '';
+$amountMax = $_POST['amountMax'] ?? '';
+$dateStart = $_POST['dateStart'] ?? '';
+$dateEnd = $_POST['dateEnd'] ?? '';
+
+// Fetch the current balance from the account table
+function fetchCurrentBalance($accountID) {
+    global $pdo;
+
+    $balanceStmt = $pdo->prepare("SELECT accountBalance FROM account WHERE accountID = ?");
+    $balanceStmt->execute([$accountID]);
+    return $balanceStmt->fetchColumn();
 }
 
 if (isset($_POST['add'])) {
@@ -158,7 +161,7 @@ $search = $_POST['search'] ?? '';
 $sort = $_GET['sort'] ?? 'transactionDate';
 $order = $_GET['order'] ?? 'DESC';
 
-$transactions = fetchTransactions($accountID, $search, $sort, $order);
+$transactions = fetchTransactions($accountID, $categoryFilter, $amountMin, $amountMax, $dateStart, $dateEnd, $search, $sort, $order);
 $currentBalance = fetchCurrentBalance($accountID);
 
 ob_end_flush(); // End output buffering and flush all output
@@ -243,21 +246,21 @@ ob_end_flush(); // End output buffering and flush all output
         <label for="categoryFilter">Category:</label>
         <select name="categoryFilter" id="categoryFilter">
             <option value="">All Categories</option>
-            <?php
-                // Assume $categories contains all categories as before
-                foreach ($categories as $category) {
-                    echo '<option value="' . $category['categoryID'] . '">' . htmlspecialchars($category['categoryName']) . '</option>';
-                }
-            ?>
+            <!-- ... populate as before ... -->
         </select>
-        <label for="amountMin">Min Amount:</label>
-        <input type="number" name="amountMin" id="amountMin" placeholder="0">
-        <label for="amountMax">Max Amount:</label>
-        <input type="number" name="amountMax" id="amountMax" placeholder="No Limit">
+
+        <label for="amountMin">Minimum Amount:</label>
+        <input type="number" name="amountMin" id="amountMin" placeholder="Min Amount">
+
+        <label for="amountMax">Maximum Amount:</label>
+        <input type="number" name="amountMax" id="amountMax" placeholder="Max Amount">
+
         <label for="dateStart">Start Date:</label>
         <input type="date" name="dateStart" id="dateStart">
+
         <label for="dateEnd">End Date:</label>
         <input type="date" name="dateEnd" id="dateEnd">
+
         <button type="submit">Apply Filters</button>
     </form>
     <br>
