@@ -307,9 +307,9 @@ ob_end_flush(); // End output buffering and flush all output
         </tbody>
     </table>
     <script>
-    <script>
         function resetFilters() {
-            window.location.href = 'account_details.php?accountID=' + <?= json_encode($accountID) ?>;
+            var cleanURL = window.location.href.split('?')[0] + '?accountID=' + <?= json_encode($accountID) ?>;
+            window.location.href = cleanURL;
         }
     </script>
 </body>

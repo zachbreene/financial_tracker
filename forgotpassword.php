@@ -81,7 +81,6 @@ ob_end_flush();
                 <button type="submit" class="btn"><?= $question ? 'Submit Answer' : 'Get Question' ?></button>
             </div>
         </form>
-        <br>
         <div class="form-footer">
             <a href="index.php" style="text-decoration: underline;">Log in</a>
         </div>
