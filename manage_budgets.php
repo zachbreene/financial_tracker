@@ -64,8 +64,9 @@ function calculateBudgetStatus($userID, $pdo) {
                                        WHERE t.categoryID = ? AND t.transactionDate BETWEEN ? AND ? AND t.transactionType = 'Expense' AND a.userID = ?");
         $expensesStmt->execute([$budget['categoryID'], $budget['startDate'], $budget['endDate'], $userID]);
         $expenses = $expensesStmt->fetch();
-        $totalSpent = abs($expenses['totalSpent']) ?: 0; // Convert to positive if necessary
-        $remainingBudget = $budget['budgetLimit'] - $totalSpent;
+        $totalSpent = $expenses['totalSpent'] ?: 0; // Directly use the sum, assume expenses are negative
+
+        $remainingBudget = $budget['budgetLimit'] + $totalSpent; // Add because totalSpent is negative for expenses
 
         $statusMessage = '';
         if ($remainingBudget < 0) {
