@@ -59,7 +59,7 @@ $transactions = $transactionsStmt->fetchAll();
         h1, h2 {
             color: #333;
         }
-        /* ul {
+        ul {
             list-style-type: none;
             padding: 0;
         }
@@ -69,8 +69,8 @@ $transactions = $transactionsStmt->fetchAll();
             padding: 10px;
             margin-bottom: 5px;
             border-radius: 5px;
-        } */
-        /* nav ul {
+        } 
+        nav ul {
             display: flex;
             padding: 0;
         }
@@ -92,7 +92,7 @@ $transactions = $transactionsStmt->fetchAll();
         }
         nav a:hover {
             background-color: #0056b3;
-        } */
+        } 
     </style>
 </head>
 <body>

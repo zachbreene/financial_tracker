@@ -156,7 +156,7 @@ ob_end_flush(); // End output buffering and flush all output
     <!--Fixed Sticky Navigation Bar-->
     <div tabindex="0" id="navcontainer">
             <ul class="navbar">
-                <li class="navlist" id="dashboardHover"><a class="active" href="dashboard.php">Dashboard</a></li>
+                <li class="navlist" id="dashboardHover"><a href="dashboard.php">Dashboard</a></li>
                 <li class="navlist" id="accountHover"><a href="manage_accounts.php">Manage Accounts</a></li>
                 <li class="navlist" id="budgetHover"><a href="manage_budgets.php">Manage Budgets</a></li>
                 <li style="float:right" class="navlist" id="logoutHover"><a href="?action=logout">Logout</a></li>
