@@ -216,7 +216,7 @@ ob_end_flush(); // End output buffering and flush all output
             </ul>
     </div>
     <h1>Account Transactions</h1>
-    <a href="manage_accounts.php">Back to Accounts</a>
+    <br>
     <br>
     <h2>Current Balance: $<?= number_format($currentBalance, 2) ?></h2>
     <br>
